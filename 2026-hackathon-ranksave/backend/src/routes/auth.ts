@@ -24,10 +24,11 @@ function signToken(user: { id: string; email: string; displayName: string }): st
 // POST /api/auth/signup
 authRouter.post('/signup', async (req, res, next) => {
   try {
-    const { displayName, email, password } = req.body as {
+    const { displayName, email, password, walletAddress } = req.body as {
       displayName?: string;
       email?: string;
       password?: string;
+      walletAddress?: string;
     };
 
     if (!displayName?.trim() || !email?.trim() || !password) {
@@ -45,11 +46,16 @@ authRouter.post('/signup', async (req, res, next) => {
     const id = crypto.randomUUID();
     const now = new Date();
 
+    const normalisedWallet = walletAddress?.trim()
+      ? normaliseWalletAddress(walletAddress.trim())
+      : null;
+
     await db.insert(users).values({
       id,
       displayName: displayName.trim(),
       email: email.toLowerCase(),
       passwordHash,
+      walletAddress: normalisedWallet,
       createdAt: now,
     });
 

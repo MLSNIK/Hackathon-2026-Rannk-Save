@@ -18,6 +18,10 @@ export function renderSignupView(container: HTMLElement): void {
           <label for="signup-password">Password</label>
           <input id="signup-password" name="password" type="password" class="input" required autocomplete="new-password" />
         </div>
+        <div class="field">
+          <label for="signup-wallet">Wallet address <span style="font-weight:normal;opacity:.6">(optional)</span></label>
+          <input id="signup-wallet" name="walletAddress" type="url" class="input" placeholder="https://ilp.interledger-test.dev/you  or  $ilp.interledger-test.dev/you" autocomplete="off" />
+        </div>
         <div id="signup-error" class="error-msg" hidden></div>
         <button type="submit" class="btn btn-primary" id="signup-btn">Create account</button>
       </form>
@@ -36,11 +40,13 @@ export function renderSignupView(container: HTMLElement): void {
     errDiv.hidden   = true;
 
     try {
-      const data   = new FormData(form);
+      const data          = new FormData(form);
+      const walletAddress = (data.get('walletAddress') as string).trim();
       const result = await api.auth.signup({
         displayName: (data.get('displayName') as string).trim(),
         email:       (data.get('email')       as string).trim(),
         password:     data.get('password')    as string,
+        ...(walletAddress ? { walletAddress } : {}),
       });
       setToken(result.token);
       window.location.hash = '#/remit';

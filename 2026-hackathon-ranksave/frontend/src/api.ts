@@ -264,7 +264,7 @@ async function patch<T>(path: string, body: unknown): Promise<T> {
 
 export const api = {
   auth: {
-    signup: (body: { displayName: string; email: string; password: string }) =>
+    signup: (body: { displayName: string; email: string; password: string; walletAddress?: string }) =>
       post<{ token: string; user: User }>('/api/auth/signup', body),
     login: (body: { email: string; password: string }) =>
       post<{ token: string; user: User }>('/api/auth/login', body),
