@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RankSave</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <a href="#/" class="logo">RankSave</a>
+      <nav id="main-nav" class="main-nav" hidden>
+        <a href="#/" class="nav-link" data-route="">Home</a>
+        <a href="#/remit"   class="nav-link" data-route="remit">Send</a>
+        <a href="#/receive" class="nav-link" data-route="receive">Receive</a>
+        <a href="#/savings" class="nav-link" data-route="savings">My Bag</a>
+        <a href="#/shop"    class="nav-link" data-route="shop">Shop</a>
+        <a href="#/news"    class="nav-link" data-route="news">News</a>
+        <a href="#/history" class="nav-link" data-route="history">History</a>
+        <a href="#/profile" class="nav-link" data-route="profile">Profile</a>
+      </nav>
+    </header>
+
+    <main id="app">
+      <div id="view"></div>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
