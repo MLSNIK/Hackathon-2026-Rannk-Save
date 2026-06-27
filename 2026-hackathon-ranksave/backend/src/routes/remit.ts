@@ -85,8 +85,12 @@ remitRouter.post('/quote', requireAuth, async (req, res, next) => {
           const savingsResult = await createQuoteTransaction({
             senderWalletAddress,                       // same spending wallet
             receiverWalletAddress: me.savingsWalletAddress,
+            // FIXED_RECEIVE: the savings wallet receives exactly savingsValue.
+            // This sets incomingAmount on the incoming payment so Rafiki
+            // auto-completes it the moment the money arrives — no need for
+            // the backend to call complete() with the savings wallet's own key.
             amount:      savingsValue.toString(),
-            paymentType: 'FIXED_SEND',
+            paymentType: 'FIXED_RECEIVE',
             userId:      req.user!.id,
             kind:        'SAVINGS',
             parentTransactionId: result.transactionId,
@@ -287,6 +291,7 @@ remitRouter.get('/history', requireAuth, async (req, res, next) => {
     const txFields = {
       id:                    transactions.id,
       status:                transactions.status,
+      kind:                  transactions.kind,
       paymentType:           transactions.paymentType,
       senderWalletAddress:   transactions.senderWalletAddress,
       receiverWalletAddress: transactions.receiverWalletAddress,

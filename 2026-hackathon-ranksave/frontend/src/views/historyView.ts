@@ -3,6 +3,7 @@ import { escapeHtml } from '../escape';
 import { toPointer } from '../pointer';
 import { formatMoney } from '../money';
 import { isQuoteExpired } from '../txStatus';
+import { STORE_WALLET_NAMES } from './shopView';
 
 // Sent payments show what left the wallet (debit, in the sender's currency);
 // received payments show what arrived (receive amount, in the receiver's currency).
@@ -70,7 +71,7 @@ export async function renderHistoryView(container: HTMLElement): Promise<void> {
                <tr>
                  <th>Date</th>
                  <th>Amount</th>
-                 <th>To / From</th>
+                 <th>Destination</th>
                  <th>Status</th>
                </tr>
              </thead>
@@ -80,16 +81,21 @@ export async function renderHistoryView(container: HTMLElement): Promise<void> {
                    <td class="history-date-cell">${formatDate(tx.createdAt)}</td>
                    <td class="history-amount-cell amount-${tx.direction}">${formatAmount(tx)}</td>
                    <td>
-                     ${tx.counterpartyId
-                       ? `<a class="history-recip-link" href="#/user/${encodeURIComponent(tx.counterpartyId)}">
-                            <div class="history-recip-name">${escapeHtml(tx.counterpartyName ?? '—')}</div>
-                            <div class="history-recip-pointer">${escapeHtml(toPointer(tx.counterpartyWallet))}</div>
-                          </a>`
-                       : `<div>
-                            <div class="history-recip-name">${escapeHtml(tx.counterpartyName ?? '—')}</div>
-                            <div class="history-recip-pointer">${escapeHtml(toPointer(tx.counterpartyWallet))}</div>
-                          </div>`
-                     }
+                     ${(() => {
+                       const dir      = tx.direction === 'sent' ? 'To' : 'From';
+                       const storeName = STORE_WALLET_NAMES[tx.counterpartyWallet];
+                       const name     = tx.kind === 'SAVINGS'
+                         ? 'Pension Fund'
+                         : (tx.counterpartyName ?? storeName ?? '—');
+                       const pointer  = escapeHtml(toPointer(tx.counterpartyWallet));
+                       const inner    = `
+                         <div class="history-recip-direction">${dir}</div>
+                         <div class="history-recip-name">${escapeHtml(name)}</div>
+                         <div class="history-recip-pointer">${pointer}</div>`;
+                       return tx.counterpartyId
+                         ? `<a class="history-recip-link" href="#/user/${encodeURIComponent(tx.counterpartyId)}">${inner}</a>`
+                         : `<div>${inner}</div>`;
+                     })()}
                    </td>
                    <td>
                      ${statusBadge(tx)}

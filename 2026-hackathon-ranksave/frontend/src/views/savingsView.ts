@@ -30,7 +30,7 @@ export async function renderSavingsView(container: HTMLElement): Promise<void> {
   };
 
   const rows = contributions.length === 0
-    ? `<p class="muted">No stacks yet. Flip on auto-save in your <a href="#/profile">Profile</a>, then make a payment to start your bag. 💸</p>`
+    ? `<p class="muted">No stacks yet. Flip on auto-save in your <a href="#/profile">Profile</a>, then make a payment to start your bag.</p>`
     : `
       <ul class="savings-list">
         ${contributions.map(c => `
@@ -47,14 +47,14 @@ export async function renderSavingsView(container: HTMLElement): Promise<void> {
   container.innerHTML = `
     <div class="card send-card">
       <div class="send-header">
-        <h2 class="send-title">🔮 Your future fund</h2>
+        <h2 class="send-title">Your future fund</h2>
         <p class="send-subtitle">Stacked automatically, a little at a time, every time you spend.</p>
       </div>
 
       <div class="savings-hero">
         <span class="savings-hero-label">Stacked so far</span>
         <span class="savings-hero-amount">${totalDisplay}</span>
-        <span class="savings-hero-sub">${completed.length} contribution${completed.length === 1 ? '' : 's'} · future you approves 🙌</span>
+        <span class="savings-hero-sub">${completed.length} contribution${completed.length === 1 ? '' : 's'}</span>
       </div>
 
       <div class="quote-summary">

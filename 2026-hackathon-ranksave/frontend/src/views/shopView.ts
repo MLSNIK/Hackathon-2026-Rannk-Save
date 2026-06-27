@@ -32,13 +32,20 @@ const STORES: Store[] = [
   { id: 'shoprong',      name: 'Shoprong',      emoji: '🏪', tagline: 'Groceries & daily essentials.',        active: false, wallet: '' },
 ];
 
+/** Maps a store wallet URL → display name. Used by historyView to label shop transactions. */
+export const STORE_WALLET_NAMES: Record<string, string> = Object.fromEntries(
+  STORES.filter(s => s.wallet).map(s => [s.wallet, s.name])
+);
+
 const SHOPLYFT_PRODUCTS: Product[] = [
-  { id: 'sneakers',   name: 'Cloud Runner Sneakers', emoji: '👟', price: 89.99,  blurb: 'All-day comfort, street-ready.' },
-  { id: 'hoodie',     name: 'Oversized Hoodie',      emoji: '🧥', price: 49.99,  blurb: 'Heavyweight cotton, cosy fit.' },
-  { id: 'headphones', name: 'Wireless Headphones',   emoji: '🎧', price: 129.99, blurb: 'Noise-cancelling, 30h battery.' },
-  { id: 'backpack',   name: 'Everyday Backpack',     emoji: '🎒', price: 39.99,  blurb: 'Laptop sleeve + water-resistant.' },
-  { id: 'shades',     name: 'Retro Sunglasses',      emoji: '🕶️', price: 24.99,  blurb: 'UV400, that main-character energy.' },
-  { id: 'watch',      name: 'Smart Watch',           emoji: '⌚', price: 199.99, blurb: 'Track steps, sleep & spending.' },
+  { id: 'sneakers',   name: 'Cloud Runner Sneakers', emoji: '👟', price: 899.99,  blurb: 'All-day comfort, street-ready.' },
+  { id: 'hoodie',     name: 'Oversized Hoodie',      emoji: '🧥', price: 499.99,  blurb: 'Heavyweight cotton, cosy fit.' },
+  { id: 'headphones', name: 'Wireless Headphones',   emoji: '🎧', price: 1299.99, blurb: 'Noise-cancelling, 30h battery.' },
+  { id: 'backpack',   name: 'Everyday Backpack',     emoji: '🎒', price: 399.99,  blurb: 'Laptop sleeve + water-resistant.' },
+  { id: 'shades',     name: 'Retro Sunglasses',      emoji: '🕶️', price: 249.99,  blurb: 'UV400, that main-character energy.' },
+  { id: 'watch',      name: 'Smart Watch',           emoji: '⌚', price: 1999.99, blurb: 'Track steps, sleep & spending.' },
+  { id: 'ilp-buff',   name: 'Interledger Buff',      emoji: '🧣', price: 50.00,   blurb: 'Rep the open payments movement.' },
+  { id: 'ilp-bag',    name: 'Interledger Backpack',  emoji: '💼', price: 89.00,   blurb: 'Carry your stack everywhere.' },
 ];
 
 // ─── Brand marks for the checkout (kept inline so there are no asset deps) ──────
@@ -86,16 +93,19 @@ export async function renderStoreView(container: HTMLElement, user: User, storeI
   const store = STORES.find(s => s.id === storeId && s.active);
   if (!store) { window.location.hash = '#/shop'; return; }
 
-  // Resolve the store wallet's currency once, so prices + checkout use the real scale.
-  let assetCode = 'USD';
+  // Resolve the USER's wallet currency — prices are in the sender's currency (ZAR),
+  // so we use FIXED_SEND and need the sender's asset scale for unit conversion.
+  let assetCode = 'ZAR';
   let assetScale = 2;
-  try {
-    const info = await api.walletInfo(store.wallet);
-    assetCode  = info.assetCode;
-    assetScale = info.assetScale;
-  } catch { /* fall back to USD/2 for display */ }
+  if (user.walletAddress) {
+    try {
+      const info = await api.walletInfo(user.walletAddress);
+      assetCode  = info.assetCode;
+      assetScale = info.assetScale;
+    } catch { /* fall back to ZAR/2 */ }
+  }
 
-  const price = (n: number) => `${n.toFixed(2)} ${assetCode}`;
+  const price = (n: number) => `R${n.toFixed(2)}`;
 
   function renderCatalog(): void {
     container.innerHTML = `
@@ -131,7 +141,20 @@ export async function renderStoreView(container: HTMLElement, user: User, storeI
   }
 
   function renderCheckout(product: Product): void {
-    const noWallet = !user.walletAddress;
+    const noWallet     = !user.walletAddress;
+    const savingsPct   = (user.savingsEnabled && user.savingsPercent) ? user.savingsPercent : 0;
+    const savingsAmt   = product.price * savingsPct / 100;
+    const totalAmt     = product.price + savingsAmt;
+
+    const pensionRow = savingsPct > 0 ? `
+      <div class="summary-row">
+        <span class="label">🏦 Pension top-up (${savingsPct}%)</span>
+        <span class="value">${price(savingsAmt)}</span>
+      </div>
+      <div class="summary-row checkout-total-row">
+        <span class="label"><strong>Total charged</strong></span>
+        <span class="value"><strong>${price(totalAmt)}</strong></span>
+      </div>` : '';
 
     container.innerHTML = `
       <div class="card send-card">
@@ -148,6 +171,16 @@ export async function renderStoreView(container: HTMLElement, user: User, storeI
           </div>
           <span class="checkout-item-price">${price(product.price)}</span>
         </div>
+
+        ${pensionRow ? `
+          <div class="quote-summary checkout-pension-summary">
+            <div class="summary-row">
+              <span class="label">Item price</span>
+              <span class="value">${price(product.price)}</span>
+            </div>
+            ${pensionRow}
+          </div>
+        ` : ''}
 
         <hr class="divider" />
 
@@ -171,9 +204,7 @@ export async function renderStoreView(container: HTMLElement, user: User, storeI
           <div class="warning-msg">
             Add your wallet address in <a href="#/profile">Profile</a> before checking out with Interledger.
           </div>
-        ` : `
-          <p class="muted checkout-note">Paying with Interledger runs your RankSave checkout — your order is paid first, and your pension top-up rides along in the same approval.</p>
-        `}
+        ` : ''}
 
         <div id="checkout-error" class="error-msg" hidden></div>
       </div>
@@ -204,7 +235,7 @@ export async function renderStoreView(container: HTMLElement, user: User, storeI
           senderWalletAddress:   user.walletAddress!,
           receiverWalletAddress: store!.wallet,
           amount:                smallestUnit,
-          paymentType:           'FIXED_RECEIVE',
+          paymentType:           'FIXED_SEND',
         });
         const { interactUrl } = await api.consent(quote.transactionId);
         window.location.href = interactUrl;

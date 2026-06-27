@@ -27,7 +27,7 @@ function renderDashboardHome(container: HTMLElement): void {
         <h1 class="home-hero-title home-hero-title-warm">Secure tomorrow.</h1>
         <p class="home-hero-body">
           Every payment quietly stacks a little into your retirement.<br />
-          No budgeting, no effort — future you is already winning. 💸
+          No budgeting, no effort — future you is already winning.
         </p>
         <div class="home-hero-cta-row">
           <a href="#/remit"   class="btn btn-africa-primary">Send money →</a>
@@ -60,7 +60,7 @@ function renderDashboardHome(container: HTMLElement): void {
       </div>
 
       <div class="home-proverb-band">
-        <p class="home-proverb">Little by little, the bag grows. Future you says thanks. 🙌</p>
+        <p class="home-proverb">Little by little, the bag grows. Future you says thanks.</p>
       </div>
     </div>
   `;

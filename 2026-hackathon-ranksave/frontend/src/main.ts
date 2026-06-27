@@ -7,11 +7,13 @@ import { renderSignupView }  from './views/signupView';
 import { renderProfileView } from './views/profileView';
 import { renderHistoryView } from './views/historyView';
 import { renderQuoteView }   from './views/quoteView';
-import { renderReceiveView } from './views/receiveView';
+import { renderDisbursementView } from './views/disbursementView';
 import { renderSavingsView } from './views/savingsView';
 import { renderShopView, renderStoreView } from './views/shopView';
+import { renderFuturesView } from './views/futuresView';
 import { renderStatusView }        from './views/statusView';
 import { renderPublicProfileView } from './views/publicProfileView';
+import { renderRewardsView }       from './views/rewardsView';
 import { renderNewsView }          from './views/newsView';
 import { renderNewsArticleView }   from './views/newsArticleView';
 import type { UnlockOutcome }      from './views/newsArticleView';
@@ -122,8 +124,8 @@ async function route(): Promise<void> {
     await showRemit(cachedUser);
     return;
   }
-  if (path === '/receive') {
-    renderReceiveView(view, cachedUser);
+  if (path === '/disbursement') {
+    await renderDisbursementView(view, cachedUser);
     return;
   }
   if (path === '/savings') {
@@ -134,9 +136,17 @@ async function route(): Promise<void> {
     renderShopView(view);
     return;
   }
+  if (path === '/futures') {
+    await renderFuturesView(view, cachedUser);
+    return;
+  }
   if (path.startsWith('/shop/')) {
     const storeId = path.slice('/shop/'.length);
     await renderStoreView(view, cachedUser, storeId);
+    return;
+  }
+  if (path === '/rewards') {
+    await renderRewardsView(view);
     return;
   }
   if (path === '/news') {

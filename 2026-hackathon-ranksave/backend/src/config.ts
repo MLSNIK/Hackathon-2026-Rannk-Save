@@ -6,13 +6,17 @@ function required(name: string): string {
   return val;
 }
 
+function normaliseUrl(addr: string): string {
+  return addr.startsWith('$') ? `https://${addr.slice(1)}` : addr;
+}
+
 export const config = {
   port: Number(process.env.PORT ?? 3001),
   backendUrl: process.env.BACKEND_URL ?? 'http://localhost:3001',
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:5173',
 
   op: {
-    walletAddress: required('OP_WALLET_ADDRESS'),
+    walletAddress: normaliseUrl(required('OP_WALLET_ADDRESS')),
     keyId:         required('OP_KEY_ID'),
     privateKeyPath: required('OP_PRIVATE_KEY_PATH'),
   },

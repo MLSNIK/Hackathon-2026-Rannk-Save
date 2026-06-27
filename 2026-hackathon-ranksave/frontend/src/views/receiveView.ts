@@ -1,4 +1,4 @@
-import { api, User, UserSearchResult, WalletInfo, PaymentRequestEntry, PaymentType } from '../api';
+import { api, User, UserSearchResult, WalletInfo, PaymentRequestEntry } from '../api';
 import { escapeHtml } from '../escape';
 import { toPointer } from '../pointer';
 import { avatarHtml } from '../avatar';
@@ -18,9 +18,7 @@ const STATUS_LABELS: Record<string, string> = {
 // One row in the "Asks you've sent" list. The counterpart is the payer.
 function outgoingAskHtml(ask: PaymentRequestEntry): string {
   const amount = formatMoney(ask.amount, ask.assetCode, ask.assetScale);
-  const line = ask.paymentType === 'FIXED_SEND'
-    ? `You asked <strong>${escapeHtml(ask.counterpartName)}</strong> to send <strong>${amount}</strong>`
-    : `You asked <strong>${escapeHtml(ask.counterpartName)}</strong> for <strong>${amount}</strong>`;
+  const line   = `You asked <strong>${escapeHtml(ask.counterpartName)}</strong> for <strong>${amount}</strong>`;
 
   return `
     <li class="request-item">
@@ -78,26 +76,6 @@ export function renderReceiveView(container: HTMLElement, user: User): void {
           <hr class="divider" />
 
           <div class="field">
-            <label>Request Type</label>
-            <div class="radio-group">
-              <label>
-                <input type="radio" name="askType" value="FIXED_RECEIVE" checked />
-                <span>
-                  <strong>I receive exactly</strong>
-                  <span class="muted"> — the amount lands in your currency</span>
-                </span>
-              </label>
-              <label>
-                <input type="radio" name="askType" value="FIXED_SEND" />
-                <span>
-                  <strong>They send exactly</strong>
-                  <span class="muted"> — the amount is in their currency</span>
-                </span>
-              </label>
-            </div>
-          </div>
-
-          <div class="field">
             <label for="ask-amount">Amount</label>
             <div class="amount-wrap">
               <input id="ask-amount" type="number" min="0.01" step="any" class="input" placeholder="0.00" required />
@@ -141,16 +119,9 @@ export function renderReceiveView(container: HTMLElement, user: User): void {
   let selectedPayer: UserSearchResult | null = null;
   let myWalletInfo: WalletInfo | null        = null;
   let payerWalletInfo: WalletInfo | null     = null;
-  let askType: PaymentType                   = 'FIXED_RECEIVE';
-
-  // The amount is denominated in MY currency for FIXED_RECEIVE,
-  // and in the PAYER's currency for FIXED_SEND.
-  function denominatingInfo(): WalletInfo | null {
-    return askType === 'FIXED_RECEIVE' ? myWalletInfo : payerWalletInfo;
-  }
 
   function updateCurrency(): void {
-    currencySpan.textContent = denominatingInfo()?.assetCode ?? '—';
+    currencySpan.textContent = myWalletInfo?.assetCode ?? '—';
   }
 
   if (user.walletAddress) {
@@ -158,14 +129,6 @@ export function renderReceiveView(container: HTMLElement, user: User): void {
       .then(info => { myWalletInfo = info; updateCurrency(); })
       .catch(() => {});
   }
-
-  form.querySelectorAll<HTMLInputElement>('input[name="askType"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      askType = radio.value as PaymentType;
-      amountInput.value = '';
-      updateCurrency();
-    });
-  });
 
   async function selectPayer(result: UserSearchResult): Promise<void> {
     selectedPayer      = result;
@@ -191,7 +154,6 @@ export function renderReceiveView(container: HTMLElement, user: User): void {
       }
       const tag = payerDisplay.querySelector<HTMLSpanElement>('#payer-currency-tag');
       if (tag) tag.textContent = payerWalletInfo?.assetCode ?? '?';
-      if (askType === 'FIXED_SEND') updateCurrency();
     }
   }
 
@@ -284,7 +246,7 @@ export function renderReceiveView(container: HTMLElement, user: User): void {
       return;
     }
 
-    const info = denominatingInfo();
+    const info = myWalletInfo;
     if (!info) {
       errDiv.textContent = 'Currency info not yet loaded — please wait a moment and try again.';
       errDiv.hidden      = false;
@@ -305,7 +267,7 @@ export function renderReceiveView(container: HTMLElement, user: User): void {
     try {
       await api.requests.create({
         payerId:     selectedPayer.id,
-        paymentType: askType,
+        paymentType: 'FIXED_RECEIVE',
         amount:      smallestUnit,
         note:        noteInput.value.trim() || undefined,
       });

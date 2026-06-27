@@ -91,10 +91,6 @@ export function renderStatusView(container: HTMLElement, transactionId: string):
   }
 
   function render(tx: Transaction) {
-    // The receiver's currency may differ from the sender's (cross-currency payment)
-    const receiveCode  = tx.receiveAssetCode  ?? tx.assetCode;
-    const receiveScale = tx.receiveAssetScale ?? tx.assetScale;
-
     if (tx.status === 'COMPLETED') {
       content.innerHTML = `
         <div class="status-terminal">
@@ -112,10 +108,6 @@ export function renderStatusView(container: HTMLElement, transactionId: string):
             <div class="summary-row">
               <span class="label">You sent</span>
               <span class="value">${formatMoney(tx.debitAmount, tx.assetCode, tx.assetScale)}</span>
-            </div>
-            <div class="summary-row">
-              <span class="label">They received</span>
-              <span class="value">${formatMoney(tx.receiveAmount, receiveCode, receiveScale)}</span>
             </div>
             ${savingsRow(tx)}
           </div>

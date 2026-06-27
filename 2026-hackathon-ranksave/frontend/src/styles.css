@@ -1062,7 +1062,16 @@ details[open] > .tx-details-toggle::before { transform: rotate(90deg); }
 .history-amount-cell.amount-sent     { color: var(--color-danger); }
 .history-amount-cell.amount-received { color: var(--color-success); }
 
-/* Recipient — stacked name + pointer */
+/* Recipient — stacked direction label + name + pointer */
+.history-recip-direction {
+  font-size:      0.6rem;
+  font-weight:    700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color:          var(--color-muted);
+  margin-bottom:  0.1rem;
+}
+
 .history-recip-name {
   font-weight:   600;
   white-space:   nowrap;
@@ -1645,6 +1654,9 @@ details[open] > .tx-details-toggle::before { transform: rotate(90deg); }
 .checkout-item-price { font-weight: 700; font-size: 1.15rem; color: var(--color-savings); }
 .checkout-note { font-size: 0.8125rem; }
 
+.checkout-pension-summary { margin-top: 0.25rem; }
+.checkout-total-row { border-top: 1px solid var(--color-border); margin-top: 0.25rem; padding-top: 0.5rem; }
+
 .checkout-label {
   font-family: ui-monospace, 'Space Grotesk', monospace;
   font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em;
@@ -1704,3 +1716,608 @@ details[open] > .tx-details-toggle::before { transform: rotate(90deg); }
 .savings-item-main { display: flex; flex-direction: column; gap: 0.15rem; }
 .savings-item-amount { font-weight: 600; color: var(--color-text); }
 .savings-item-date { font-size: 0.75rem; color: var(--color-muted); }
+
+/* ─── Disbursement / Two-Pot ──────────────────────────────────── */
+
+/* Savings Pot / Retirement Pot side-by-side overview */
+.disb-pots {
+  display:       flex;
+  align-items:   stretch;
+  gap:           0;
+  background:    var(--color-bg);
+  border:        1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow:      hidden;
+}
+
+.disb-pot {
+  flex:           1;
+  display:        flex;
+  flex-direction: column;
+  gap:            0.2rem;
+  padding:        1rem 1.125rem;
+}
+
+.disb-pot-divider {
+  width:      1px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+.disb-pot-label {
+  font-size:      0.7rem;
+  font-weight:    600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color:          var(--color-muted);
+}
+
+.disb-pot-amount {
+  font-family:          var(--font-display);
+  font-size:            1.25rem;
+  font-weight:          700;
+  font-variant-numeric: tabular-nums;
+  line-height:          1.1;
+}
+
+.disb-pot-access  { color: var(--color-savings); }
+.disb-pot-retire  { color: var(--color-primary); }
+
+.disb-pot-sub {
+  font-size: 0.75rem;
+  color:     var(--color-muted);
+}
+
+/* Section wrapper */
+.disb-section {
+  display:        flex;
+  flex-direction: column;
+  gap:            0.875rem;
+}
+
+.disb-section-head {
+  display:     flex;
+  align-items: center;
+  gap:         0.75rem;
+}
+
+.disb-section-title {
+  font-family: var(--font-display);
+  font-size:   1rem;
+  font-weight: 700;
+}
+
+.disb-section-sub {
+  font-size:   0.875rem;
+  color:       var(--color-muted);
+  line-height: 1.5;
+  margin-top:  -0.375rem;
+}
+
+/* Tax warning strip */
+.disb-tax-note {
+  font-size:     0.8125rem;
+  color:         #fbbf24;
+  padding:       0.5rem 0.75rem;
+  background:    color-mix(in srgb, #fbbf24 9%, transparent);
+  border:        1px solid color-mix(in srgb, #fbbf24 22%, transparent);
+  border-radius: calc(var(--radius) / 2);
+  line-height:   1.5;
+}
+
+/* Insufficient funds message */
+.disb-locked-msg {
+  font-size:     0.875rem;
+  color:         var(--color-muted);
+  padding:       0.75rem;
+  background:    rgba(255,255,255,0.03);
+  border:        1px dashed var(--color-border);
+  border-radius: var(--radius);
+  line-height:   1.5;
+}
+.disb-locked-msg strong { color: var(--color-text); }
+
+/* Monthly stats 2-col grid */
+.disb-monthly-grid {
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   0.75rem;
+}
+
+.disb-monthly-stat {
+  display:        flex;
+  flex-direction: column;
+  gap:            0.2rem;
+  padding:        0.875rem 1rem;
+  background:     var(--color-bg);
+  border:         1px solid var(--color-border);
+  border-radius:  var(--radius);
+}
+
+.disb-monthly-label {
+  font-size:      0.7rem;
+  font-weight:    600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color:          var(--color-muted);
+}
+
+.disb-monthly-value {
+  font-family:          var(--font-display);
+  font-size:            1rem;
+  font-weight:          700;
+  font-variant-numeric: tabular-nums;
+}
+.disb-value-ok { color: var(--color-savings); }
+
+/* Progress bar toward comfort target */
+.disb-progress-wrap { display: flex; flex-direction: column; gap: 0.35rem; }
+
+.disb-progress-bar {
+  height:        8px;
+  background:    var(--color-border);
+  border-radius: 999px;
+  overflow:      hidden;
+}
+
+.disb-progress-fill {
+  height:        100%;
+  background:    var(--gradient-savings);
+  border-radius: 999px;
+  transition:    width 0.4s ease;
+  min-width:     2px;
+}
+
+.disb-progress-labels {
+  display:         flex;
+  justify-content: space-between;
+  font-size:       0.75rem;
+  color:           var(--color-muted);
+}
+
+.disb-comfort-msg { font-size: 0.8125rem; line-height: 1.5; }
+.disb-ok  { color: var(--color-success); }
+.disb-gap { color: var(--color-muted); }
+
+/* "Set Up" button with inline age badge */
+.disb-retire-btn {
+  width:       100%;
+  display:     flex;
+  align-items: center;
+  justify-content: center;
+  gap:         0.5rem;
+}
+
+.disb-age-badge {
+  font-size:      0.6875rem;
+  font-weight:    700;
+  padding:        0.15rem 0.55rem;
+  border-radius:  999px;
+  background:     color-mix(in srgb, var(--color-muted) 18%, transparent);
+  color:          var(--color-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ─── Futures view ───────────────────────────────────────────── */
+.futures-page { display: flex; flex-direction: column; gap: 1rem; }
+
+/* Allan Gray partner card */
+.ag-card {
+  display:       flex;
+  align-items:   center;
+  gap:           1rem;
+  padding:       0.875rem 1.125rem;
+  background:    rgba(255, 255, 255, 0.04);
+  border:        1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+}
+
+.ag-logo {
+  width:           52px;
+  height:          52px;
+  border-radius:   0.6rem;
+  background:      #E8A900;
+  color:           #1A1200;
+  font-family:     var(--font-display);
+  font-size:       1.25rem;
+  font-weight:     800;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  flex-shrink:     0;
+  letter-spacing:  0.01em;
+}
+
+.ag-info { display: flex; flex-direction: column; gap: 0.2rem; }
+
+.ag-name {
+  font-family: var(--font-display);
+  font-size:   1rem;
+  font-weight: 700;
+  color:       var(--color-text);
+}
+
+.ag-tagline {
+  font-size:   0.8125rem;
+  color:       var(--color-muted);
+  line-height: 1.4;
+}
+
+.futures-inputs { display: flex; flex-direction: column; gap: 1rem; }
+
+/* Chart container — no border, let the canvas breathe */
+.futures-chart-wrap {
+  position: relative;
+  width:    100%;
+  height:   240px;
+  padding:  0.25rem 0;
+}
+
+/* Legend row below chart */
+.futures-legend {
+  display:     flex;
+  align-items: center;
+  gap:         1.25rem;
+  flex-wrap:   wrap;
+}
+
+.futures-legend-item {
+  display:     flex;
+  align-items: center;
+  gap:         0.45rem;
+  font-size:   0.8125rem;
+  color:       var(--color-muted);
+}
+
+.futures-legend-item::before {
+  content:       '';
+  display:       inline-block;
+  width:         10px;
+  height:        10px;
+  border-radius: 3px;
+  flex-shrink:   0;
+}
+
+.futures-legend-portfolio::before  { background: #7C5CFF; }
+.futures-legend-principal::before  { background: #FF5CA8; }
+.futures-legend-growth::before     { background: rgba(52, 224, 161, 0.75); }
+.futures-legend-threshold::before  { background: rgba(16, 185, 129, 0.85); }
+
+/* "Year 30 : 94847.32 ZAR" */
+.futures-year-total {
+  text-align:  center;
+  font-size:   0.9375rem;
+  color:       var(--color-muted);
+}
+.futures-year-total strong {
+  font-family:          var(--font-display);
+  font-size:            1.125rem;
+  font-weight:          700;
+  color:                var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Comfort target info strip */
+.futures-threshold-note {
+  font-size:     0.8125rem;
+  color:         var(--color-muted);
+  padding:       0.5rem 0.75rem;
+  background:    rgba(16, 185, 129, 0.06);
+  border:        1px solid rgba(16, 185, 129, 0.18);
+  border-radius: calc(var(--radius) / 2);
+  line-height:   1.5;
+}
+.futures-threshold-note strong { color: rgba(16, 185, 129, 0.9); }
+
+.futures-comfort-msg { font-size: 0.8125rem; line-height: 1.5; }
+.futures-ok  { color: var(--color-success); }
+.futures-gap { color: var(--color-muted); }
+
+.futures-disclaimer {
+  font-size:   0.7rem;
+  color:       var(--color-muted);
+  opacity:     0.7;
+  line-height: 1.5;
+}
+
+/* ─── Rewards ─────────────────────────────────────────── */
+.rewards-section {
+  display:        flex;
+  flex-direction: column;
+  gap:            0.875rem;
+}
+
+.rewards-section-head {
+  display:     flex;
+  align-items: center;
+  gap:         0.75rem;
+}
+
+.rewards-section-title {
+  font-family: var(--font-display);
+  font-size:   1rem;
+  font-weight: 700;
+}
+
+.rewards-section-sub {
+  font-size:   0.875rem;
+  color:       var(--color-muted);
+  line-height: 1.5;
+  margin-top:  -0.375rem;
+}
+
+.rewards-partner-intro {
+  font-size: 0.875rem;
+  color:     var(--color-muted);
+}
+
+/* Card flip game */
+.rewards-cards-row {
+  display:               grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:                   0.75rem;
+}
+
+.reward-card {
+  perspective: 700px;
+  cursor:      pointer;
+  height:      168px;
+}
+
+.reward-card.flipped .reward-card-inner {
+  transform: rotateY(180deg);
+}
+
+.reward-card-inner {
+  position:        relative;
+  width:           100%;
+  height:          100%;
+  transition:      transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform-style: preserve-3d;
+}
+
+.reward-card-front,
+.reward-card-back {
+  position:             absolute;
+  inset:                0;
+  border-radius:        var(--radius);
+  display:              flex;
+  flex-direction:       column;
+  align-items:          center;
+  justify-content:      center;
+  gap:                  0.5rem;
+  -webkit-backface-visibility: hidden;
+  backface-visibility:  hidden;
+  padding:              0.75rem 0.5rem;
+}
+
+.reward-card-front {
+  background: linear-gradient(145deg, #1A1744, #251F52);
+  border:     1.5px dashed var(--color-primary-border);
+}
+
+.reward-card:not(.flipped):hover .reward-card-front,
+.reward-card:not(.flipped):focus .reward-card-front {
+  border-color: var(--color-primary);
+  background:   linear-gradient(145deg, #1F1A52, #2C2565);
+}
+
+.reward-card-back {
+  background: var(--color-surface);
+  border:     1px solid var(--color-border);
+  transform:  rotateY(180deg);
+}
+
+.reward-card-picked .reward-card-back {
+  border-color: var(--color-savings);
+  background:   rgba(52, 224, 161, 0.06);
+}
+
+.reward-card-logo {
+  width:           38px;
+  height:          38px;
+  border-radius:   8px;
+  color:           #fff;
+  font-weight:     800;
+  font-size:       0.6rem;
+  letter-spacing:  -0.03em;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  flex-shrink:     0;
+}
+
+.reward-card-tap {
+  font-size: 0.6875rem;
+  color:     var(--color-muted);
+}
+
+.reward-card-value {
+  font-family:  var(--font-display);
+  font-size:    0.875rem;
+  font-weight:  700;
+  text-align:   center;
+  line-height:  1.2;
+}
+
+.reward-card-code {
+  font-family:  monospace;
+  font-size:    0.55rem;
+  color:        var(--color-savings);
+  text-align:   center;
+  word-break:   break-all;
+}
+
+.rewards-pick-hint {
+  font-size:   0.8125rem;
+  text-align:  center;
+}
+
+/* Voucher prize box */
+.rewards-voucher-box {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            0.35rem;
+  padding:        1rem;
+  background:     rgba(52, 224, 161, 0.06);
+  border:         1px solid rgba(52, 224, 161, 0.22);
+  border-radius:  var(--radius);
+  text-align:     center;
+}
+
+.rewards-voucher-label {
+  font-size:      0.7rem;
+  font-weight:    600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color:          var(--color-muted);
+}
+
+.rewards-voucher-prize {
+  font-family: var(--font-display);
+  font-size:   0.9375rem;
+  color:       var(--color-text);
+}
+
+.rewards-voucher-code {
+  font-family:    monospace;
+  font-size:      0.875rem;
+  color:          var(--color-savings);
+  background:     var(--color-bg);
+  padding:        0.25rem 0.875rem;
+  border-radius:  6px;
+  letter-spacing: 0.06em;
+}
+
+.rewards-voucher-hint {
+  font-size: 0.75rem;
+  color:     var(--color-muted);
+}
+
+/* Year-in-review stats */
+.rewards-year-stats {
+  display:               grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:                   0.625rem;
+}
+
+.rewards-year-stat {
+  display:        flex;
+  flex-direction: column;
+  gap:            0.2rem;
+  padding:        0.75rem 0.5rem;
+  background:     var(--color-bg);
+  border:         1px solid var(--color-border);
+  border-radius:  var(--radius);
+  text-align:     center;
+}
+
+.rewards-year-stat-label {
+  font-size:      0.65rem;
+  font-weight:    600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color:          var(--color-muted);
+}
+
+.rewards-year-stat-value {
+  font-family:          var(--font-display);
+  font-size:            0.9375rem;
+  font-weight:          700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Year progress bar */
+.rewards-year-progress {
+  display:        flex;
+  flex-direction: column;
+  gap:            0.35rem;
+}
+
+.rewards-year-bar {
+  height:        10px;
+  background:    var(--color-border);
+  border-radius: 999px;
+  overflow:      hidden;
+}
+
+.rewards-year-fill {
+  height:        100%;
+  background:    var(--gradient-primary);
+  border-radius: 999px;
+  transition:    width 0.6s ease;
+  min-width:     4px;
+}
+
+.rewards-year-labels {
+  display:         flex;
+  justify-content: space-between;
+  font-size:       0.75rem;
+  color:           var(--color-muted);
+}
+
+/* Year-end prize gradient box */
+.rewards-year-prize {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            0.25rem;
+  padding:        1.25rem;
+  background:     var(--gradient-primary);
+  border-radius:  var(--radius);
+  text-align:     center;
+}
+
+.rewards-year-prize-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.rewards-year-prize-value {
+  font-family:  var(--font-display);
+  font-size:    1.5rem;
+  font-weight:  800;
+  color:        #fff;
+}
+
+.rewards-year-cta {
+  font-size:   0.875rem;
+  text-align:  center;
+  line-height: 1.5;
+}
+
+/* Partner chips */
+.rewards-partners {
+  display:   flex;
+  flex-wrap: wrap;
+  gap:       0.625rem;
+}
+
+.rewards-partner-chip {
+  display:       flex;
+  align-items:   center;
+  gap:           0.5rem;
+  padding:       0.375rem 0.875rem 0.375rem 0.375rem;
+  background:    var(--color-bg);
+  border:        1px solid var(--color-border);
+  border-radius: 999px;
+  font-size:     0.8125rem;
+  font-weight:   600;
+}
+
+.rewards-partner-logo {
+  width:           26px;
+  height:          26px;
+  border-radius:   50%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  color:           #fff;
+  font-size:       0.5rem;
+  font-weight:     800;
+  letter-spacing:  -0.03em;
+  flex-shrink:     0;
+}

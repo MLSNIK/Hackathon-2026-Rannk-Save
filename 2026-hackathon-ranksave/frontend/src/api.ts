@@ -75,6 +75,7 @@ export interface Transaction {
 export interface HistoryEntry {
   id:                    string;
   status:                'PENDING' | 'AWAITING_GRANT' | 'COMPLETED' | 'FAILED';
+  kind:                  string | null;
   paymentType:           PaymentType;
   direction:             'sent' | 'received';
   senderWalletAddress:   string;
